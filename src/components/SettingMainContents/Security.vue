@@ -1,18 +1,13 @@
 <script>
 export default {
-  name: "About",
-  data() {
-    return {
-      version: '8.10.68.14'
-    }
-  }
+  name: "Security"
 }
 </script>
 
 <template>
   <div class="setting-item">
     <div class="setting-title">
-      Phishy browser extension version {{ version }}
+      Some texts in Security Component
     </div>
   </div>
 </template>

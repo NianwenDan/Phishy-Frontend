@@ -52,25 +52,6 @@ export default {
 </template>
 
 <style scoped>
-.setting-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px 0;
-  border-bottom: 1px solid #EEEEEE;
-}
-
-.setting-title {
-  font-size: 15px;
-  margin-bottom: 6px;
-}
-
-.setting-description {
-  font-size: 13px;
-  color: #666;
-  max-width: 600px;
-}
-
 .integration-status {
   display: flex;
   align-items: center;
