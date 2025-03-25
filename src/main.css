@@ -11,6 +11,10 @@
     border-bottom: 1px solid #EEEEEE;
 }
 
+.main-content .setting-item:last-child {
+    border-bottom: none;
+}
+
 .main-content .setting-title {
     font-size: 15px;
     margin-bottom: 6px;
