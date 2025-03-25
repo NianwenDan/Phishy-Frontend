@@ -84,14 +84,23 @@ export default {
 
 <template>
   <n-form label-width="auto">
-    <n-form-item label="Enable audit log: ">
+    <n-form-item label="Enable Audit Logs: ">
       <n-switch v-model:value="auditSettings.isActive"/>
     </n-form-item>
 
-    <n-form-item v-if="auditSettings.isActive" label="Limit number of audit: ">
-      <n-input-number v-model:value="auditSettings.auditLimit"/>
+    <n-form-item v-if="auditSettings.isActive" label="Audit Retention Limit: ">
+      <n-input-number v-model:value="auditSettings.auditLimit" :min="1" :max="5000" />
     </n-form-item>
-    <n-form-item v-if="auditSettings.isActive" label="Search by audit Id: ">
+  </n-form>
+
+  <h3 v-if="auditSettings.isActive">Audit Data Table</h3>
+  <n-form
+      v-if="auditSettings.isActive"
+      :style="{
+      maxWidth: '240px',
+    }"
+  >
+    <n-form-item label="Search By Audit Id: ">
       <n-input v-model:value="auditSettings.auditIdFilter" type="text" placeholder="AUD-2001" @input="filterAuditId" clearable />
     </n-form-item>
   </n-form>
@@ -106,3 +115,7 @@ export default {
     />
   </div>
 </template>
+
+<style scoped>
+
+</style>

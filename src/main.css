@@ -3,6 +3,20 @@
     min-height: 100vh;
 }
 
+.main-content h2 {
+    font-size: 18px;
+    font-weight: 700;
+    margin-top: 0;
+    margin-bottom: 20px;
+}
+
+.main-content h3 {
+    font-size: 15px;
+    font-weight: 500;
+    margin-top: 0;
+    margin-bottom: 15px;
+}
+
 .main-content .setting-item {
     display: flex;
     justify-content: space-between;

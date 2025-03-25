@@ -25,10 +25,4 @@ export default {
   flex: 1;
   padding: 20px 30px;
 }
-h2 {
-  font-size: 18px;
-  font-weight: 500;
-  margin-top: 0;
-  margin-bottom: 20px;
-}
 </style>
