@@ -93,7 +93,7 @@ export default {
     </n-form-item>
   </n-form>
 
-  <h3 v-if="auditSettings.isActive">Audit Data Table</h3>
+  <h3 v-if="auditSettings.isActive">Audit Logs</h3>
   <n-form
       v-if="auditSettings.isActive"
       :style="{
