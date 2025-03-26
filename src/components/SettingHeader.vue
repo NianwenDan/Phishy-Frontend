@@ -3,7 +3,7 @@
     <n-avatar
         round
         :size="100"
-        src="/phishy-128.png"
+        src="phishy-128.png"
     >
     </n-avatar>
   </div>

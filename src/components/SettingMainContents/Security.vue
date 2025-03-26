@@ -1,5 +1,6 @@
 <script>
-import { NDataTable, NButton, NSpace, NModal, NForm, NFormItem, NInput, NSelect } from "naive-ui";
+import { NDataTable, NButton, NSpace, NModal, NForm, NFormItem, NInput, NSelect, NTag } from "naive-ui";
+import { h } from "vue";
 export default {
   name: "Security",
   components: {
@@ -7,7 +8,8 @@ export default {
     NDataTable,
     NButton,
     NSpace,
-    NModal
+    NModal,
+    NTag
   },
   data() {
     return {
@@ -30,23 +32,40 @@ export default {
         columns: [
           { title: "Rule Id", key: "ruleId" },
           { title: "Pattern", key: "pattern" },
-          { title: "Action", key: "action" }
+          {
+            title: "Action",
+            key: "action",
+            render(row) {
+              const tags = row.action.map((tagKey) =>
+                  h(
+                      NTag,
+                      {
+                        style: { marginRight: "6px" },
+                        type: "info",
+                        bordered: false
+                      },
+                      { default: () => tagKey }
+                  )
+              );
+              return tags;
+            }
+          }
         ],
         data: [
           {
             ruleId: "6DGfqP",
             pattern: "^/api/v1/users/\\d+$",
-            action: "Allow"
+            action: ["Allow"]
           },
           {
             ruleId: "UUTSrG",
             pattern: "^/admin/.*$",
-            action: "Deny"
+            action: ["Deny"]
           },
           {
             ruleId: "o1hvSr",
             pattern: "^/products/(\\d+|new)$",
-            action: "Allow"
+            action: ["Allow"]
           }
         ]
       }
@@ -57,7 +76,7 @@ export default {
       let newPolicy = {
         ruleId: this.securitySettings.createPolicy.ruleId,
         pattern: this.securitySettings.createPolicy.pattern,
-        action: this.securitySettings.createPolicy.action
+        action: [this.securitySettings.createPolicy.action]
       }
       // add the new data to the table
       this.blackAndWhitelistDataTable.data.push(newPolicy);
@@ -73,7 +92,6 @@ export default {
       for (let i = 0; i < length; i++) {
         result += chars.charAt(Math.floor(Math.random() * chars.length));
       }
-      console.log(result);
       return result;
     }
   }

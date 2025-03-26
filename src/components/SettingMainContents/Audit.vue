@@ -13,7 +13,7 @@ export default {
   data() {
     return {
       auditSettings: {
-        isActive: true,
+        isActive: false,
         auditLimit: 100,
         auditIdFilter: ''
       },
@@ -83,6 +83,9 @@ export default {
 </script>
 
 <template>
+  <p class="setting-description">
+    Keep track of the plugin’s activity with logged events, including detections and blocked URLs. Use this section to monitor actions and manage audit history.
+  </p>
   <n-form label-width="auto">
     <n-form-item label="Enable Audit Logs: ">
       <n-switch v-model:value="auditSettings.isActive"/>
