@@ -36,26 +36,10 @@ export default {
     return {
       activeMenuItem: 'general',
       menuItems: [
-        {
-          name: 'general',
-          label: 'General',
-          iconBg: '#54B4FF'
-        },
-        {
-          name: 'security',
-          label: 'Security',
-          iconBg: '#F5A623'
-        },
-        {
-          name: 'audit',
-          label: 'Audit',
-          iconBg: '#4CD964'
-        },
-        {
-          name: 'about',
-          label: 'About',
-          iconBg: '#9E9E9E'
-        }
+        {name: "general", label: "General", iconBg: "#54B4FF", iconName: 'SettingsOutline'},
+        {name: "security", label: "Security", iconBg: "#F5A623", iconName: 'ShieldCheckmarkOutline'},
+        {name: "audit", label: "Audit", iconBg: "#4CD964", iconName: 'DocumentTextOutline'},
+        {name: "about", label: "About", iconBg: "#9E9E9E", iconName: 'InformationCircleOutline'},
       ]
     }
   },

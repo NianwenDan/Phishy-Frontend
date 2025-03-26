@@ -6,13 +6,7 @@
       @click="setActiveMenuItem(item.name)"
   >
     <div class="menu-icon" :style="{ backgroundColor: item.iconBg }">
-      <n-icon size="18" color="white">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-          <path
-              d="M368.5 240H272v-96.5c0-8.8-7.2-16-16-16s-16 7.2-16 16V240h-96.5c-8.8 0-16 7.2-16 16 0 4.4 1.8 8.4 4.7 11.3 2.9 2.9 6.9 4.7 11.3 4.7H240v96.5c0 4.4 1.8 8.4 4.7 11.3 2.9 2.9 6.9 4.7 11.3 4.7 8.8 0 16-7.2 16-16V272h96.5c8.8 0 16-7.2 16-16s-7.2-16-16-16z"
-          />
-        </svg>
-      </n-icon>
+      <n-icon size="18" color="white" :component="getIcon(item.iconName)"></n-icon>
     </div>
     <span>{{ item.label }}</span>
   </div>
@@ -20,12 +14,27 @@
 
 <script>
 import {NIcon} from 'naive-ui';
+import { CloseOutline, SettingsOutline, ShieldCheckmarkOutline, DocumentTextOutline, InformationCircleOutline } from '@vicons/ionicons5'
 
 export default {
   name: 'SettingSidebar',
   props: ['activeMenuItem', 'menuItems', 'setActiveMenuItem'],
   components: {
     NIcon,
+  },
+  methods: {
+    getIcon(iconName) {
+      if (!iconName) {
+        return CloseOutline
+      }
+      const predefinedIcon = {
+        'SettingsOutline': SettingsOutline,
+        'ShieldCheckmarkOutline': ShieldCheckmarkOutline,
+        'DocumentTextOutline': DocumentTextOutline,
+        'InformationCircleOutline': InformationCircleOutline
+      }
+      return predefinedIcon[iconName]
+    }
   }
 }
 </script>

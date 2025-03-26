@@ -3,7 +3,7 @@ export default {
   name: "About",
   data() {
     return {
-      version: '8.10.68.14'
+      version: '1.0'
     }
   }
 }

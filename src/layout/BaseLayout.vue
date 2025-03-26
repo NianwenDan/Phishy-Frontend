@@ -23,8 +23,7 @@ export default {
 .app-container {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
   max-width: 1100px;
-  margin: 0 auto;
-  padding-top: 35px;
+  margin: 35px auto 0;
 }
 
 .settings-container {
