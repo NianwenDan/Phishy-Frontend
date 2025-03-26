@@ -34,6 +34,7 @@ export default {
       <n-input v-model:value="generalSettings.openPhishApiKey" type="text" />
     </n-form-item>
   </n-form>
+  
   <h3>Export Configuration Settings</h3>
   <p class="setting-description">
     Use this option to download and save your current plugin settings. This allows you to back up your configuration or transfer it to another device easily. Settings will be exported as a file for future import.
