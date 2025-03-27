@@ -10,7 +10,9 @@ export default {
   },
   data() {
     return {
-      currentView: "blacklist", // "blacklist", "whitelist", or "all"
+      currentView: "blacklist",      // "blacklist", "whitelist", or "all"
+      isConfirmDeleteVisible: false, // For policy delete (security tab)
+      policyToDelete: null,          // For policy delete (security tab)
       securitySettings: {
         isShowCreatePolicy: false,
         createPolicy: {
@@ -34,8 +36,7 @@ export default {
           key: "action",
           render(row) {
             const tags = row.action.map((tagKey) =>
-              h(
-                NTag,
+              h(NTag,
                 {
                   style: { marginRight: "6px" },
                   // added: success applies green and error applies red color to the button (auto)
@@ -51,8 +52,8 @@ export default {
         {title: "Manage", key: "actions",
             render: (row, index) =>
                 h( NButton,
-                  { class: "hover-button", size: "small", type: "error",
-                    onClick: () => this.deletePolicy(row, index)
+                  { size: "small", type: "error",
+                    onClick: () => this.confirmDelete(row)
                   },
                   { default: () => "Delete" }
                 )
@@ -86,12 +87,26 @@ export default {
       this.securitySettings.createPolicy.pattern = '';
       this.securitySettings.createPolicy.action = '';
     },
+
     // Policy(row) deletion logic
-    deletePolicy(row) {
-      const targetList = row.action.includes("Deny") ? this.blacklistData : this.whitelistData;
-      const index = targetList.findIndex(item => item.ruleId === row.ruleId);
-      if (index !== -1) targetList.splice(index, 1);
+    // Confirm Delete Setup
+    confirmDelete(row) {
+      this.policyToDelete = row;
+      this.isConfirmDeleteVisible = true;
     },
+    // Perform the deletion on the dialog (modal)
+    performDelete() {
+      const list = this.policyToDelete.action.includes("Deny") ? this.blacklistData : this.whitelistData;
+      const index = list.findIndex(item => item.ruleId === this.policyToDelete.ruleId);
+      if (index !== -1) list.splice(index, 1);
+      this.cancelDelete();
+    },
+    // Cancel the deletion on modal
+    cancelDelete() {
+      this.isConfirmDeleteVisible = false;
+      this.policyToDelete = null;
+    },
+
     generateRandomString(length = 6) {
       const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
       let result = '';
@@ -168,6 +183,27 @@ export default {
       </n-form-item>
     </n-form>
   </n-modal>
+<!-- Deletion pop up window: confirm delete or cancel (remain unchange) -->
+  <n-modal
+  v-model:show="isConfirmDeleteVisible"
+  preset="dialog"
+  :title="`Warning: Delete Policy ${policyToDelete?.ruleId || ''}?`"
+>
+  <template #default>
+      <ul style="margin-top: 10px; padding-left: 20px; line-height: 1.6;">
+        <li><strong>Rule ID:</strong> {{ policyToDelete?.ruleId }}</li>
+        <li><strong>Pattern:</strong> {{ policyToDelete?.pattern }}</li>
+        <li><strong>Action:</strong> {{ policyToDelete?.action?.join(', ') }}</li>
+      </ul>
+  </template>
+
+  <template #action>
+    <n-space justify="end">
+      <n-button secondary @click="cancelDelete">Cancel</n-button>
+      <n-button type="error" @click="performDelete">Confirm Delete</n-button>
+    </n-space>
+  </template>
+</n-modal>
 
 </template>
 
@@ -193,5 +229,4 @@ export default {
   transform: scale(1.05);
   border-radius: 12px;
 }
-
 </style>
