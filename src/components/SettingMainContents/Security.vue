@@ -13,6 +13,9 @@ export default {
       currentView: "blacklist",      // "blacklist", "whitelist", or "all"
       isConfirmDeleteVisible: false, // For policy delete (security tab)
       policyToDelete: null,          // For policy delete (security tab)
+      searchKeyword: '',             // (For filter)
+      searchFilter: 'ruleId',        // (For filter) default to ruleId
+      actionSortOrder: null,         // (For sort) default to null
       securitySettings: {
         isShowCreatePolicy: false,
         createPolicy: {
@@ -29,26 +32,43 @@ export default {
         }
       },
       tableColumns: [ // added
-        { title: "Rule Id", key: "ruleId" },
+        { title: "Rule ID", key: "ruleId" },
         { title: "Pattern", key: "pattern" },
         {
-          title: "Action",
-          key: "action",
+          title: () =>
+            this.currentView === 'all'
+              ? h('div', { style: 'display: flex; align-items: center; gap: 6px;' }, [
+                  'Action',
+                  h(NSelect,
+                    {
+                      size: 'small',
+                      value: this.actionSortOrder,
+                      placeholder: 'Sort actions',
+                      options: [
+                        { label: 'Allow First', value: 'Allow' },
+                        { label: 'Deny First', value: 'Deny' },
+                        { label: 'Reset Sort', value: null }
+                      ],
+                      style: 'width: 110px;',
+                      onUpdateValue: (val) => (this.actionSortOrder = val)
+                    }
+                  )
+                ])
+              : 'Action',
+          key: 'action',
           render(row) {
-            const tags = row.action.map((tagKey) =>
+            return row.action.map((tagKey) =>
               h(NTag,
                 {
-                  style: { marginRight: "6px" },
-                  // added: success applies green and error applies red color to the button (auto)
-                  type: tagKey === "Allow" ? "success" : "error", 
+                  style: { marginRight: "12px" },
+                  type: tagKey === "Allow" ? "success" : "error",
                   bordered: false
                 },
                 { default: () => tagKey }
               )
             );
-            return tags;
           }
-      },
+        },
         {title: "Manage", key: "actions",
             render: (row, index) =>
                 h( NButton,
@@ -70,7 +90,42 @@ export default {
       ]
     };
   },
-  
+  // Filter logic: return search key from the searching box & sorting (Allow:Deny) on View all tab(next to 'Action')
+  computed: {
+    filteredData() {
+      const keyword = this.searchKeyword.trim().toLowerCase();
+      const baseData =
+        this.currentView === 'blacklist'
+          ? this.blacklistData
+          : this.currentView === 'whitelist'
+          ? this.whitelistData
+          : [...this.blacklistData, ...this.whitelistData];
+
+      const filtered = keyword
+        ? baseData.filter((item) =>
+            item[this.searchFilter]?.toLowerCase().includes(keyword)
+          )
+        : baseData;
+
+      if (this.actionSortOrder === 'Allow') {
+        return filtered.sort((a, b) => {
+          const aVal = a.action.includes('Allow') ? 0 : 1;
+          const bVal = b.action.includes('Allow') ? 0 : 1;
+          return aVal - bVal;
+        });
+      }
+
+      if (this.actionSortOrder === 'Deny') {
+        return filtered.sort((a, b) => {
+          const aVal = a.action.includes('Deny') ? 0 : 1;
+          const bVal = b.action.includes('Deny') ? 0 : 1;
+          return aVal - bVal;
+        });
+      }
+
+      return filtered;
+    }
+  },
   methods: {
     addNewPolicy() {
       const newPolicy = {
@@ -106,7 +161,6 @@ export default {
       this.isConfirmDeleteVisible = false;
       this.policyToDelete = null;
     },
-
     generateRandomString(length = 6) {
       const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
       let result = '';
@@ -114,30 +168,41 @@ export default {
         result += chars.charAt(Math.floor(Math.random() * chars.length));
       }
       return result;
-    }
-    
+    }   
   }
 };
 </script>
 
 <template>
   <h3></h3>
+  <!-- Filter & search bar -->
+  <div style="margin-bottom: 16px; display: flex; gap: 12px; align-items: center;">
+    <n-select
+      v-model:value="searchFilter"
+      :options="[
+        { label: 'Filter by Rule ID', value: 'ruleId' },
+        { label: 'Filter by Pattern', value: 'pattern' }
+      ]"
+      style="width: 160px"
+      placeholder="Select Filter"
+    />
+    <n-input
+      v-model:value="searchKeyword"
+      placeholder="Search..."
+      clearable
+      style="flex: 1;"
+    />
+</div>
 
   <!-- added buttons to switch views -->
   <!-- Table with control group on the right side -->
   <div style="display: flex; gap: 20px; align-items: flex-start;">
-     <!-- table switching logic: If in BL, view BL; If in WL, view WL; If view all, display all data -->
     <n-data-table
       style="flex: 1"
       :single-line="false"
       :columns="tableColumns"
-      :data="currentView === 'blacklist'
-            ? blacklistData
-            : currentView === 'whitelist'
-            ? whitelistData
-            : [...blacklistData, ...whitelistData]"
-    />
-    
+      :data="filteredData"
+  />
     <!-- Button group: Right side of the table -->
     <n-button-group vertical style="border-radius: 14px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
       <n-button class="hover-button" :type="currentView === 'blacklist' ? 'primary' : 'default'" @click="currentView = 'blacklist'">Blacklist</n-button>
