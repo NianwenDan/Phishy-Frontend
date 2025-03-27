@@ -82,11 +82,21 @@ export default {
       blacklistData: [ // temp data for bl
         { ruleId: "UUTSrG", pattern: "^/admin/.*$", action: ["Deny"] },
         { ruleId: "CCtvsQ", pattern: "^/legituser/.*$", action: ["Deny"] },
-        { ruleId: "zzttvQ", pattern: "^/remoteuser/.*$", action: ["Deny"] }
+        { ruleId: "zzttvQ", pattern: "^/remoteuser/.*$", action: ["Deny"] },
+        { ruleId: "a1B2c3", pattern: "^/hack/.*$", action: ["Deny"] },
+        { ruleId: "d3E4f5", pattern: "^/exploit/\\w+$", action: ["Deny"] },
+        { ruleId: "g6H7i8", pattern: "^/unauthorized$", action: ["Deny"] },
+        { ruleId: "j9K0l1", pattern: "^/config/.*$", action: ["Deny"] },
+        { ruleId: "m2N3o4", pattern: "^/sensitive-data$", action: ["Deny"] }
       ],
       whitelistData: [ // temp data for wl
         { ruleId: "6DGfqP", pattern: "^/api/v1/users/\\d+$", action: ["Allow"]},
-        { ruleId: "o1hvSr", pattern: "^/products/(\\d+|new)$", action: ["Allow"]}
+        { ruleId: "o1hvSr", pattern: "^/products/(\\d+|new)$", action: ["Allow"]},
+        { ruleId: "p5Q6r7", pattern: "^/user/profile/\\d+$", action: ["Allow"] },
+        { ruleId: "s8T9u0", pattern: "^/dashboard$", action: ["Allow"] },
+        { ruleId: "v1W2x3", pattern: "^/support/.*$", action: ["Allow"] },
+        { ruleId: "y4Z5a6", pattern: "^/settings$", action: ["Allow"] },
+        { ruleId: "b7C8d9", pattern: "^/public/.*$", action: ["Allow"] }
       ]
     };
   },
@@ -202,6 +212,7 @@ export default {
       :single-line="false"
       :columns="tableColumns"
       :data="filteredData"
+      :pagination="{ pageSize: 10 }"
   />
     <!-- Button group: Right side of the table -->
     <n-button-group vertical style="border-radius: 14px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
