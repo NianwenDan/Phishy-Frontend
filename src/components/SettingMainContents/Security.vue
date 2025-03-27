@@ -1,29 +1,12 @@
 <script>
-import {
-  NDataTable,
-  NButton,
-  NSpace,
-  NModal,
-  NForm,
-  NFormItem,
-  NInput,
-  NSelect,
-  NTag
-} from "naive-ui";
+import { NDataTable, NButton, NSpace, NModal, NForm, NFormItem, NInput, NSelect, NTag, NButtonGroup } from "naive-ui";
 import { h } from "vue";
 
 export default {
   name: "Security",
   components: {
-    NInput,
-    NFormItem,
-    NForm,
-    NSelect,
-    NDataTable,
-    NButton,
-    NSpace,
-    NModal,
-    NTag
+    NInput, NFormItem, NForm, NSelect, NDataTable,
+    NButton, NSpace, NModal, NTag, NButtonGroup
   },
   data() {
     return {
@@ -64,34 +47,29 @@ export default {
             );
             return tags;
           }
+      },
+        {title: "Manage", key: "actions",
+            render: (row, index) =>
+                h( NButton,
+                  { class: "hover-button", size: "small", type: "error",
+                    onClick: () => this.deletePolicy(row, index)
+                  },
+                  { default: () => "Delete" }
+                )
         }
       ],
-      blacklistData: [ // added
-        {
-          ruleId: "UUTSrG",
-          pattern: "^/admin/.*$",
-          action: ["Deny"]
-        },
-        {
-          ruleId: "CCtvsQ",
-          pattern: "^/legituser/.*$",
-          action: ["Deny"]
-        }
+      blacklistData: [ // temp data for bl
+        { ruleId: "UUTSrG", pattern: "^/admin/.*$", action: ["Deny"] },
+        { ruleId: "CCtvsQ", pattern: "^/legituser/.*$", action: ["Deny"] },
+        { ruleId: "zzttvQ", pattern: "^/remoteuser/.*$", action: ["Deny"] }
       ],
-      whitelistData: [ // added
-        {
-          ruleId: "6DGfqP",
-          pattern: "^/api/v1/users/\\d+$",
-          action: ["Allow"]
-        },
-        {
-          ruleId: "o1hvSr",
-          pattern: "^/products/(\\d+|new)$",
-          action: ["Allow"]
-        }
+      whitelistData: [ // temp data for wl
+        { ruleId: "6DGfqP", pattern: "^/api/v1/users/\\d+$", action: ["Allow"]},
+        { ruleId: "o1hvSr", pattern: "^/products/(\\d+|new)$", action: ["Allow"]}
       ]
     };
   },
+  
   methods: {
     addNewPolicy() {
       const newPolicy = {
@@ -101,16 +79,18 @@ export default {
       };
 
       // modified logic to push into the correct list
-      if (newPolicy.action.includes("Deny")) {
-        this.blacklistData.push(newPolicy);
-      } else {
-        this.whitelistData.push(newPolicy);
-      }
+      if (newPolicy.action.includes("Deny")) { this.blacklistData.push(newPolicy); } else {this.whitelistData.push(newPolicy);}
 
       this.securitySettings.isShowCreatePolicy = false;
       this.securitySettings.createPolicy.ruleId = this.generateRandomString();
       this.securitySettings.createPolicy.pattern = '';
       this.securitySettings.createPolicy.action = '';
+    },
+    // Policy(row) deletion logic
+    deletePolicy(row) {
+      const targetList = row.action.includes("Deny") ? this.blacklistData : this.whitelistData;
+      const index = targetList.findIndex(item => item.ruleId === row.ruleId);
+      if (index !== -1) targetList.splice(index, 1);
     },
     generateRandomString(length = 6) {
       const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -120,6 +100,7 @@ export default {
       }
       return result;
     }
+    
   }
 };
 </script>
@@ -128,51 +109,35 @@ export default {
   <h3></h3>
 
   <!-- added buttons to switch views -->
-  <!-- Top-left: blacklist & whitelist, Top-right: view all -->
-  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-  <!-- Left buttons -->
+  <!-- Table with control group on the right side -->
+  <div style="display: flex; gap: 20px; align-items: flex-start;">
+     <!-- table switching logic: If in BL, view BL; If in WL, view WL; If view all, display all data -->
+    <n-data-table
+      style="flex: 1"
+      :single-line="false"
+      :columns="tableColumns"
+      :data="currentView === 'blacklist'
+            ? blacklistData
+            : currentView === 'whitelist'
+            ? whitelistData
+            : [...blacklistData, ...whitelistData]"
+    />
+    
+    <!-- Button group: Right side of the table -->
+    <n-button-group vertical style="border-radius: 14px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+      <n-button class="hover-button" :type="currentView === 'blacklist' ? 'primary' : 'default'" @click="currentView = 'blacklist'">Blacklist</n-button>
+      <n-button class="hover-button" :type="currentView === 'whitelist' ? 'primary' : 'default'" @click="currentView = 'whitelist'">Whitelist</n-button>
+      <n-button class="hover-button":type="currentView === 'all' ? 'primary' : 'default'" @click="currentView = 'all'">View All</n-button>
+    </n-button-group>
+  </div>
+
+ <!-- Bottom-left: Create & Import policy buttons -->
+ <div style="display: flex; justify-content: flex-start; margin-top: 12px">
   <n-space>
-    <n-button
-      :type="currentView === 'blacklist' ? 'primary' : 'default'"
-      @click="currentView = 'blacklist'"
-    >
-      Blacklist
-    </n-button>
-    <n-button
-      :type="currentView === 'whitelist' ? 'primary' : 'default'"
-      @click="currentView = 'whitelist'"
-    >
-      Whitelist
-    </n-button>
+    <n-button class="hover-button-with-black" @click="securitySettings.isShowCreatePolicy = true">Create Policy</n-button>
+    <n-button class="hover-button-with-black">Import Policy</n-button>
   </n-space>
-
-  <!-- Right button -->
-  <n-button
-    :type="currentView === 'all' ? 'primary' : 'default'"
-    @click="currentView = 'all'"
-  >
-    View All
-  </n-button>
-  </div>
-
-  <!-- table switching logic -->
-  <n-data-table
-    :single-line="false"
-    :columns="tableColumns"
-    :data="currentView === 'blacklist'
-          ? blacklistData
-          : currentView === 'whitelist'
-          ? whitelistData
-          : [...blacklistData, ...whitelistData]"
-  />
-
-  <!-- Bottom-right: Create & Import policy buttons -->
-  <div style="display: flex; justify-content: flex-end; margin-top: 12px">
-    <n-space>
-      <n-button @click="securitySettings.isShowCreatePolicy = true">Create Policy</n-button>
-      <n-button>Import Policy</n-button>
-    </n-space>
-  </div>
+</div>
 
   <n-modal
     v-model:show="securitySettings.isShowCreatePolicy"
@@ -204,11 +169,29 @@ export default {
     </n-form>
   </n-modal>
 
-
 </template>
 
+
+
+<!-- Bottom-left: Create & Import policy buttons -->
 <style scoped>
-.n-data-table {
-  margin-top: 10px;
+.hover-button-with-black { 
+  background-color: black;
+  color: white;
+  transition: all 0.3s ease;
+  border-radius: 6px;
 }
+.hover-button-with-black:hover {
+  transform: scale(1.05);
+  border-radius: 12px;
+}
+:deep(.hover-button) {
+  transition: all 0.3s ease;
+  border-radius: 6px;
+}
+:deep(.hover-button:hover) {
+  transform: scale(1.05);
+  border-radius: 12px;
+}
+
 </style>
